@@ -1,0 +1,103 @@
+﻿
+ <br /> <h2 align="center">Food Details &#129367;</h2><br />
+<table class="table table-striped">
+
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Food Name</th>
+            <th>Cuisine</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+    <tfoot>
+        <tr>
+            <td><input type="text" id="txtfoodId" style="display:none" class="form-control" placeholder="0" /></td>
+            <td><input type="text" name="txtfoodName" class="form-control" placeholder="Food Name" /></td>
+            <td><input type="text" name="txtfoodCuisine" class="form-control" placeholder="Cuisine" /></td>
+            <td><input type="text" name="txtfoodPrice" class="form-control" placeholder="Food Price" /></td>
+            <td><input type="text" name="txtfoodQuantity" class="form-control" placeholder="Quantity" /></td>
+            <td><div class="btn btn-dark" id="btnInsert">Add Food Details</div></td>
+        </tr>
+    </tfoot>
+</table>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        GetEverthing();
+    })
+    function GetEverthing() {
+        var req = new XMLHttpRequest();
+        req.open("GET", "http://localhost:1025/api/Food");
+        req.send();
+        req.onload = function () {
+            var data = JSON.parse(req.response);
+            var TableBody = document.querySelector("table").children[1];
+            var rows = '';
+            var srno=0;
+            for (var i = 0; i < data.length; i++) {
+                rows = rows + `<tr><td>${++srno}</td>
+                <td>${data[i]["Name"]}</td>
+                <td>${data[i]["Cuisine"]}</td>
+                <td>${data[i]["Price"]}</td>
+                <td>${data[i]["Quantity"]}</td>
+                <td><button class="btn btn-danger btnDelete" data-id="${data[i]["ID"]}">Delete</button></td>
+                </tr>`;
+            }
+            TableBody.innerHTML = rows;
+            var deleteButtons = document.querySelectorAll(".btnDelete");
+            deleteButtons.forEach(function (button) {
+                button.addEventListener("click", function () {
+                    var foodId = button.getAttribute("data-id");
+                    deleteFood(foodId,button);
+                });
+            });
+        }
+    }
+    document.querySelector("#btnInsert").addEventListener("click", function () {
+        var fname = document.querySelector("input[name='txtfoodName']").value;
+        var fcuisine = document.querySelector("input[name='txtfoodCuisine']").value;
+        var fprice = document.querySelector("input[name='txtfoodPrice']").value;
+        var fquantity = document.querySelector("input[name='txtfoodQuantity']").value;
+        var data = { Name: fname, Cuisine: fcuisine, Price: fprice, Quantity: fquantity }
+        var req = new XMLHttpRequest();
+        req.open("POST", "http://localhost:1025/api/Food");
+        req.setRequestHeader("Content-Type", "application/json");
+        req.send(JSON.stringify(data));
+        req.onload = function () {
+            if (req.status == 200) {
+                GetEverthing();
+                clearData();
+            }
+            else if (req.status == 500) {
+                var data = JSON.parse(req.response);
+                alert(data.ExceptionMessage);
+            }
+        }
+    })
+
+    function clearData() {
+        document.querySelector("input[name='txtfoodName']").value='';
+        document.querySelector("input[name='txtfoodCuisine']").value = '';
+        document.querySelector("input[name='txtfoodPrice']").value = '';
+        document.querySelector("input[name='txtfoodQuantity']").value = '';
+    }
+
+    function deleteFood(foodId) {
+        var req = new XMLHttpRequest();
+        req.open("DELETE", "http://localhost:1025/api/Food/" + foodId);
+        req.send();
+        req.onload =function () {
+            if (req.status == 200) {
+                alert("Deleted successfully.");
+                GetEverthing();
+            } else if (req.status == 500) {
+                var data = JSON.parse(req.response);
+                alert(data.ExceptionMessage);
+            }
+        }
+    }
+</script>

@@ -1,0 +1,40 @@
+﻿@model Ravi_MscIT_WebAPI.Models.TBLUser
+@{
+    ViewBag.Title = "Login";
+}
+
+
+@if (ViewData["errorMessage"] != null)
+            {
+                <script>
+                    alert('@ViewData["errorMessage"]');
+                </script>
+            }
+
+<h2 align="center">Login &#128100;</h2>
+@using (Html.BeginForm("DoLogin", "Main", FormMethod.Post))
+{
+    <div class="row">
+        <div class="col-4"></div>
+        <div class="col-4 mt-2">
+            <label>Username : </label>
+            @Html.TextBoxFor(a => a.UserName, new { Class = "form-control" })
+        </div>
+        <div class="col-4"></div>
+        <div class="col-4"></div>
+        <div class="col-4 mt-2">
+            <label>Password : </label>
+            @Html.PasswordFor(a => a.Password, new { Class = "form-control" })
+        </div>
+        <div class="col-4"></div>
+        <div class="col-4"></div>
+        <div class="col-4 mt-2">
+            <button type="submit" class="btn btn-secondary"
+                   style=""
+                    >Login</button>
+        </div>
+        <div class="col-4"></div>
+
+    </div>
+        }
+
